@@ -353,10 +353,15 @@ var t=new Date().toISOString().split("T")[0];
 var fl=all.filter(function(p){return isNodeDelayed(p,node,t);});
 var pl=document.getElementById("projectList");
 pl.innerHTML="<div class=summary-bar style=background:#FFEBEE>"+node+" 逾期未完成（"+fl.length+"个项目）<button onclick=render() style=float:right;border:1px solid #ccc;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:11px>← 返回</button></div>";
-fl.forEach(function(p){var it=document.createElement("div");it.className="project-item";
-it.innerHTML="<div class=item-info><div class=item-name>"+p.name+"</div><div class=item-meta>👤 "+(p.person||"-")+" | 📦 "+(p.series||"-")+"</div></div><span class=badge badge-red>"+p.sl+"</span>";
-pl.appendChild(it);});
-}
+fl.forEach(function(p){
+var planDate=p.dates[NP[node]]||"-";
+var status=p.mon[node]||"-";
+var d=DB(planDate==="-"?null:planDate,t);
+var daysInfo=d>0?"超期"+Math.abs(d)+"天":"";
+var it=document.createElement("div");it.className="project-item";
+it.innerHTML="<div class=item-info><div class=item-name>"+p.name+" <span style=font-size:11px;color:#9E9E9E>"+(p.model||"")+"</span></div><div class=item-meta>👤 "+(p.person||"-")+" | 计划: "+planDate+" | "+status+" | "+daysInfo+"</div></div><span class=badge badge-red>超期</span>";
+it.onclick=function(){sel=p.name;render();showDetail(p);};pl.appendChild(it);
+});}
 </script>
 </body>
 </html>
