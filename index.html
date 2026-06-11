@@ -237,7 +237,7 @@ if(m)urgency={days:-parseInt(m[1]),label:"超期"+m[1]+"天"};
 else{m=tx.match(/还有(\d+)天/);if(m)urgency={days:parseInt(m[1]),label:"还有"+m[1]+"天"};else urgency={days:Infinity,label:tx.includes("已完成")?"已完成":""};}
 }
 p.sd=urgency.days;p.sl=urgency.label;
-if(urgency.days===Infinity)p.slv="normal";
+if(urgency.days===Infinity)p.slv="green";
 else if(urgency.days<-30)p.slv="red";else if(urgency.days<0)p.slv="red";
 else if(urgency.days<=7)p.slv="yellow";else if(urgency.days<=30)p.slv="yellow";else p.slv="green";
 if(p.ps==="完成"||p.ps==="提前完成"){p.sd=Infinity;p.sl=p.ps;p.slv="gray";}
@@ -276,7 +276,7 @@ var sb=document.createElement("div");sb.className="summary-bar";
 sb.innerHTML="共 <b>"+f.length+"</b> 个项目"+(ov>0?"，<b style=color:#E53935>超期 "+ov+" 个</b>":"")+(wn>0?"，<b style=color:#F57C00>即将到期 "+wn+" 个</b>":"")+(nm>0?"，<b style=color:#43A047>正常 "+nm+" 个</b>":"")+(dn>0?"，<b style=color:#BDBDBD>完成 "+dn+" 个</b>":"")+(stage?" | "+stage:"");
 pl.appendChild(sb);
 
-var grps={red:{l:"超期",c:"red"},yellow:{l:"即将到期",c:"yellow"},green:{l:"正常",c:"green"},gray:{l:"完成",c:"gray"}};
+var grps={red:{l:"超期",c:"red"},yellow:{l:"即将到期",c:"yellow"},green:{l:"正常",c:"green"},gray:{l:"完成",c:"gray"},normal:{l:"正常",c:"green"}};
 for(var gk in grps){var g=grps[gk],items=f.filter(function(p){return p.slv===gk;});if(!items.length)continue;
 var hd=document.createElement("div");hd.className="group-header "+g.c;hd.textContent=g.l+" ("+items.length+")";pl.appendChild(hd);
 items.forEach(function(p){
