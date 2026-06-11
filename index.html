@@ -264,7 +264,7 @@ c.querySelector(".kpi-value").style.color=bd.delayed>0?"#E53935":"#43A047";
 c.querySelector(".kpi-sub").textContent=bd.delayed>0?"点击查看明细":"";
 c.className="kpi-card"+(bd.delayed>0?" clickable":"");
 c.onclick=bd.delayed>0?(function(n){return function(){showDelayList(n);}})(NODES[i]):null;
-if(bd.delayed>0){var ovp=all.filter(function(x){return isNodeDelayed(x,NODES[i],new Date().toISOString().split("T")[0]);}).slice(0,3);var ovd=document.createElement("div");ovd.style.cssText="font-size:10px;color:#E53935;margin-top:4px;line-height:1.5";ovd.innerHTML=ovp.map(function(x){var dd=DB(x.dates[NP[NODES[i]]],new Date().toISOString().split("T")[0]);return"<div style=margin:2px 0>"+x.name+" "+(x.person||"")+" 超"+Math.abs(dd)+"天</div>";}).join("");c.appendChild(ovd);}
+
 }
 
 // 项目列表
@@ -344,7 +344,7 @@ var h="<div style=padding:20px><h2 style=margin-bottom:12px;color:#1565C0>中试
 h+="<div style=margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap>";
 aspects.forEach(function(a){
 var isActive=pilotAspect===a.k;var chipClass="pf-chip"+(isActive?" on":"");
-h+="<span class="+chipClass+" style=padding:6px 14px;border-radius:16px;font-size:12px;cursor:pointer;transition:all .2s;border:2px solid "+(isActive?"#1565C0":"#E0E0E0")+";background:"+(isActive?"#1565C0":"#fff")+";color:"+(isActive?"#fff":"#757575")+";font-weight:"+(isActive?"600":"400")+"\" onclick=\"pilotAspect='"+a.k+"';showPilotOverview()\">"+a.l+"</span>";
+h+='<span class="'+chipClass+'" onclick="pilotAspect=\''+a.k+'\';showPilotOverview()">'+a.l+'</span>';
 });
 h+="</div>";
 var fl=pp.slice();
