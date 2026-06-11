@@ -281,41 +281,38 @@ it.onclick=function(){sel=p.name;render();showDetail(p);};pl.appendChild(it);
 // ============ 项目详情 ============
 function showDetail(p){
 var panel=document.getElementById("detailPanel");
-var h="<div style=display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #BBDEFB><h2 style=font-size:17px;color:#1565C0>"+p.name+"</h2><span style=font-size:12px;padding:4px 10px;border-radius:12px;background:"+(p.ps==="完成"||p.ps==="提前完成"?"#E8F5E9":"#FFF3E0")+";color:"+(p.ps==="完成"||p.ps==="提前完成"?"#2E7D32":"#F57C00")+">"+(p.ps||"进行中")+"</span></div>";
+var statusColors={"完成":"#E8F5E9,#2E7D32","提前完成":"#E8F5E9,#2E7D32","未完成":"#FFF3E0,#F57C00"};
+var sc=statusColors[p.ps]||"#F5F5F5,#9E9E9E";var scParts=sc.split(",");
 
-h+="<div class=detail-section><h3>基本信息</h3>";
-h+="<div style=display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;font-size:13px>";
-h+="<div><span style=color:#9E9E9E>序号</span> "+(p.sn||"-")+"</div>";
-h+="<div><span style=color:#9E9E9E>系列</span> "+(p.series||"-")+"</div>";
-h+="<div><span style=color:#9E9E9E>型号</span> "+(p.model||"-")+"</div>";
-h+="<div><span style=color:#9E9E9E>替代型号</span> "+(p.altModel||"-")+"</div>";
-h+="<div><span style=color:#9E9E9E>替代编码</span> "+(p.altCode||"-")+"</div>";
-h+="<div><span style=color:#9E9E9E>负责人</span> <b>"+(p.person||"-")+"</b></div>";
-h+="<div><span style=color:#9E9E9E>当前阶段</span> "+(p.cs||"-")+"</div>";
-h+="<div><span style=color:#9E9E9E>下一步</span> <span style=color:"+(p.nn.indexOf("超期")>=0?"#E53935":"#616161")+">"+(p.nn||"-")+"</span></div>";
+var h="<div style=display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #BBDEFB>";
+h+="<div><h2 style=font-size:18px;color:#1565C0;margin-bottom:4px>"+p.name+"</h2><span style=font-size:12px;color:#9E9E9E>"+(p.model||"-")+"</span></div>";
+h+="<span style=font-size:12px;padding:5px 12px;border-radius:14px;background:"+scParts[0]+";color:"+scParts[1]+";font-weight:600>"+(p.ps||"进行中")+"</span></div>";
+
+h+="<div class=detail-section><h3>📋 基本信息</h3>";
+h+="<div style=display:grid;grid-template-columns:1fr 1fr;gap:6px 24px;font-size:13px>";
+var info=[["序号",p.sn],["系列",p.series],["型号",p.model],["替代编码",p.altCode],["替代型号",p.altModel],["负责人","<b>"+(p.person||"-")+"</b>"],["当前阶段",p.cs],["下一步","<span style=color:"+(p.nn&&p.nn.indexOf("超期")>=0?"#E53935":"#616161")+">"+(p.nn||"-")+"</span>"]];
+info.forEach(function(x){h+="<div><span style=color:#9E9E9E;font-size:11px>"+x[0]+"</span><br>"+(x[1]||"-")+"</div>";});
 h+="</div></div>";
 
-h+="<div class=detail-section><h3>关键节点进度</h3>";
-h+="<div style=display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap>";
-var nds=[["送检开始","送检开始计划","送检开始实际"],["送检结束","送检结束计划","送检结束实际"],["中试开始","中试开始计划","中试开始实际"],["中试结束","中试结束计划","中试结束实际"],["批产开始","批产开始计划","批产开始实际"],["批产结束","批产结束计划","批产结束实际"],["上市","上市计划","上市实际"]];
+h+="<div class=detail-section><h3>📅 关键节点</h3><div style=display:flex;gap:6px;flex-wrap:wrap>";
+var nds=[["送检开始","送检开始计划","送检开始实际"],["送检结束","送检结束计划","送检结束实际"],["中试开始","中试开始计划","中试开始实际"],["中试结束","中试结束计划","中试结束实际"],["批产开始","批产开始计划","批产开始实际"],["上市","上市计划","上市实际"]];
 nds.forEach(function(n){
-var st=p.mon[n[0]]||"";var cls="background:#F5F5F5;color:#BDBDBD";
-if(st.includes("逾期未完成"))cls="background:#FFEBEE;color:#E53935;font-weight:600";
-else if(st.includes("逾期完成"))cls="background:#FFF3E0;color:#EF6C00";
-else if(st.includes("按期完成"))cls="background:#E8F5E9;color:#2E7D32";
-else if(st==="待完成")cls="background:#FFF8E1;color:#F57F17";
-h+="<div style=flex:1;min-width:90px;text-align:center;padding:10px 6px;border-radius:8px;font-size:11px;"+cls+"><div style=font-weight:600;margin-bottom:2px>"+n[0]+"</div><div style=font-size:10px;color:#9E9E9E>计划 "+(p.dates[n[1]]||"-")+"</div><div style=font-size:10px;color:#9E9E9E>实际 "+(p.dates[n[2]]||"-")+"</div><div style=margin-top:4px>"+st+"</div></div>";
+var st=p.mon[n[0]]||"",bg="#F5F5F5",c="#BDBDBD",icon="";
+if(st.includes("逾期未完成")){bg="#FFEBEE";c="#E53935";icon="🔴";}
+else if(st.includes("逾期完成")){bg="#FFF3E0";c="#EF6C00";icon="⚠️";}
+else if(st.includes("按期完成")){bg="#E8F5E9";c="#2E7D32";icon="✅";}
+else if(st==="待完成"){bg="#FFF8E1";c="#F57F17";icon="⏳";}
+h+="<div style=flex:1;min-width:100px;text-align:center;padding:10px 8px;border-radius:8px;background:"+bg+";color:"+c+";font-size:11px><div style=font-weight:600;font-size:12px;margin-bottom:3px>"+icon+" "+n[0]+"</div><div style=font-size:10px;color:#9E9E9E>计划:"+(p.dates[n[1]]||"-")+"</div><div style=font-size:10px;color:#9E9E9E>实际:"+(p.dates[n[2]]||"-")+"</div><div style=margin-top:3px;font-weight:500>"+st+"</div></div>";
 });
 h+="</div></div>";
 
 if(p.pilot){var d=p.pilot;
-h+="<div class=detail-section><h3>中试进度</h3>";
-h+="<div style=display:flex;gap:8px;flex-wrap:wrap;font-size:12px>";
-h+="<div style=flex:1;min-width:80px;text-align:center;padding:10px 8px;border-radius:8px;background:"+(d.arc==="是"?"#E8F5E9":"#FFEBEE")+";color:"+(d.arc==="是"?"#2E7D32":"#E53935")+"><div>① 归档</div><div style=font-size:18px;margin-top:4px>"+(d.arc==="是"?"✅":"❌")+"</div></div>";
-h+="<div style=flex:1;min-width:80px;text-align:center;padding:10px 8px;border-radius:8px;background:"+(d.mat==="是"?"#E8F5E9":"#FFEBEE")+";color:"+(d.mat==="是"?"#2E7D32":"#E53935")+"><div>② 物料</div><div style=font-size:18px;margin-top:4px>"+(d.mat==="是"?"✅":"❌")+"</div></div>";
-h+="<div style=flex:1;min-width:80px;text-align:center;padding:10px 8px;border-radius:8px;background:"+(d.prod==="是"?"#E8F5E9":"#FFEBEE")+";color:"+(d.prod==="是"?"#2E7D32":"#E53935")+"><div>③ 生产</div><div style=font-size:18px;margin-top:4px>"+(d.prod==="是"?"✅":"❌")+"</div></div>";
-h+="<div style=flex:1;min-width:80px;text-align:center;padding:10px 8px;border-radius:8px;background:"+(d.rev?"#E8F5E9":"#FFF8E1")+";color:"+(d.rev?"#2E7D32":"#F57F17")+"><div>④ 评审</div><div style=font-size:18px;margin-top:4px>"+(d.rev||"⏳")+"</div></div>";
-h+="<div style=flex:1;min-width:80px;text-align:center;padding:10px 8px;border-radius:8px;background:"+(d.conc?"#E8F5E9":"#FFF8E1")+";color:"+(d.conc?"#2E7D32":"#F57F17")+"><div>⑤ 结论</div><div style=font-size:18px;margin-top:4px>"+(d.conc||"⏳")+"</div></div>";
+h+="<div class=detail-section><h3>🔧 中试进度</h3><div style=display:flex;gap:6px;flex-wrap:wrap>";
+var steps=[["①归档",d.arc],[ "②物料",d.mat],["③生产",d.prod],["④评审",d.rev?"✅":"⏳"],["⑤结论",d.conc?"✅":"⏳"]];
+steps.forEach(function(s){
+var done=s[1]==="是"||s[1]==="✅",bg2=done?"#E8F5E9":"#FFEBEE",c2=done?"#2E7D32":"#E53935";
+h+="<div style=flex:1;min-width:80px;text-align:center;padding:12px 8px;border-radius:8px;background:"+bg2+";color:"+c2+";font-size:12px><div style=font-weight:600>"+s[0]+"</div><div style=font-size:20px;margin-top:4px>"+(done?"✅":"❌")+"</div></div>";
+});
 h+="</div></div>";
 }
 panel.innerHTML=h;
@@ -351,15 +348,16 @@ h+="</div>";panel.innerHTML=h;
 function showDelayList(node){
 var t=new Date().toISOString().split("T")[0];
 var fl=all.filter(function(p){return isNodeDelayed(p,node,t);});
+fl.sort(function(a,b){var da=DB(a.dates[NP[node]]||null,t);var db=DB(b.dates[NP[node]]||null,t);return db-da;});
 var pl=document.getElementById("projectList");
-pl.innerHTML="<div class=summary-bar style=background:#FFEBEE>"+node+" 逾期未完成（"+fl.length+"个项目）<button onclick=render() style=float:right;border:1px solid #ccc;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:11px>← 返回</button></div>";
+pl.innerHTML="<div style=padding:12px 16px;background:#FFEBEE;border-bottom:2px solid #EF9A9A><span style=font-size:14px;font-weight:600;color:#C62828>📋 \""+node+"\" 逾期未完成</span><span style=font-size:12px;color:#E53935;margin-left:8px>共 "+fl.length+" 个项目</span><button onclick=render() style=float:right;border:1px solid #EF9A9A;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;background:#fff;color:#E53935>← 返回全部</button></div>";
+if(fl.length===0){pl.innerHTML+="<div class=empty-state><p>✅ 该项目节点没有逾期</p></div>";return;}
 fl.forEach(function(p){
 var planDate=p.dates[NP[node]]||"-";
-var status=p.mon[node]||"-";
 var d=DB(planDate==="-"?null:planDate,t);
-var daysInfo=d>0?"超期"+Math.abs(d)+"天":"";
+var overdueDays=d>0?Math.abs(d):0;
 var it=document.createElement("div");it.className="project-item";
-it.innerHTML="<div class=item-info><div class=item-name>"+p.name+" <span style=font-size:11px;color:#9E9E9E>"+(p.model||"")+"</span></div><div class=item-meta>👤 "+(p.person||"-")+" | 计划: "+planDate+" | "+status+" | "+daysInfo+"</div></div><span class=badge badge-red>超期</span>";
+it.innerHTML="<div class=item-info><div class=item-name>"+p.name+"</div><div class=item-meta><span>👤 "+(p.person||"-")+"</span><span>📅 计划 "+planDate+"</span><span style=color:#E53935;font-weight:600>超期 "+overdueDays+" 天</span></div></div><span class=badge badge-red>"+node+"逾期</span>";
 it.onclick=function(){sel=p.name;render();showDetail(p);};pl.appendChild(it);
 });}
 </script>
