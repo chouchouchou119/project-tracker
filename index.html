@@ -105,9 +105,10 @@ if(x.status!==200){document.getElementById("projectList").innerHTML="<div class=
 var wb=XLSX.read(new Uint8Array(x.response),{type:"array"});
 var s1=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:""});
 var s2=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[1]],{header:1,defval:""});
+alert("数据已加载");
 parseData(s1,s2);
 };
-x.onerror=function(){document.getElementById("projectList").innerHTML="<div class=empty-state>网络错误</div>";};
+x.onerror=function(){alert("加载失败");document.getElementById("projectList").innerHTML="<div class=empty-state>网络错误</div>";};
 x.send();
 }
 function C(v){return v?String(v).replace(/\r?\n/g," ").trim():"";}
