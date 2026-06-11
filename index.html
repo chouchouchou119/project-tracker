@@ -75,7 +75,6 @@ body{font-family:"Microsoft YaHei",Arial;background:#E3F2FD;color:#212121;displa
 <script>
 var all=[],kpi=null,search="",stage="",sel=null,PWD="119119";
 function login(){
-alert("login被调用了");
 var v=document.getElementById("pw").value;
 if(v===PWD){
 document.getElementById("loginPage").style.display="none";
@@ -87,7 +86,7 @@ load();
 if(document.cookie.indexOf("key="+PWD)>=0){
 document.getElementById("loginPage").style.display="none";
 document.getElementById("mainApp").style.display="flex";
-window.addEventListener("DOMContentLoaded",load);
+load();
 }
 function setStage(el){
 var btns=document.querySelectorAll(".stage-chip");
