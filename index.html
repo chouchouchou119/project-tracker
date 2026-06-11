@@ -250,7 +250,7 @@ function render(){
 search=document.getElementById("searchInput").value;
 sortProjects(all);kpi=calcKPI(all);
 var f=all.slice();
-if(search){var kw=search.toLowerCase();f=f.filter(function(p){return p.name.toLowerCase().includes(kw)||p.series.toLowerCase().includes(kw)||p.person.toLowerCase().includes(kw);});}
+if(search){var kw=search.toLowerCase();f=f.filter(function(p){return p.name.toLowerCase().includes(kw)||p.series.toLowerCase().includes(kw)||p.person.toLowerCase().includes(kw)||(p.model||"").toLowerCase().includes(kw);});}
 if(stage){var sm={送检开始:"送检",送检结束:"送检",中试开始:"中试",中试结束:"中试",上市:"上市"};var sk=sm[stage]||stage;f=f.filter(function(p){return(p.cs&&p.cs.includes(sk))||(stage==="上市"&&p.dates["上市计划"]);});}
 
 // KPI 卡片
