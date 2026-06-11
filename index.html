@@ -262,7 +262,7 @@ for(var i=0;i<3;i++){
 var c=document.getElementById("kpi"+i),bd=kpi.bd[NODES[i]];
 c.querySelector(".kpi-value").textContent=bd.delayed>0?bd.delayed+" 逾期":"正常";
 c.querySelector(".kpi-value").style.color=bd.delayed>0?"#E53935":"#43A047";
-if(bd.delayed>0){var ovNames=all.filter(function(x){return isNodeDelayed(x,NODES[i],new Date().toISOString().split("T")[0]);});var t=ovNames.slice(0,3).map(function(x){return x.name;}).join("，");if(ovNames.length>3)t+="等"+ovNames.length+"个";c.querySelector(".kpi-sub").textContent=t;}else{c.querySelector(".kpi-sub").textContent="";}
+c.querySelector(".kpi-sub").textContent=bd.delayed>0?"点击查看明细":"";
 c.className="kpi-card"+(bd.delayed>0?" clickable":"");
 c.onclick=bd.delayed>0?(function(n){return function(){showDelayList(n);}})(NODES[i]):null;
 
