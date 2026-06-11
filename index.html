@@ -97,18 +97,22 @@ if(stage==="全部")stage="";
 render();
 }
 function load(){
+try{
 var x=new XMLHttpRequest();
 x.open("GET","data.xlsx",true);
 x.responseType="arraybuffer";
 x.onload=function(){
-if(x.status!==200){document.getElementById("projectList").innerHTML="<div class=empty-state>加载失败</div>";return;}
+try{
+if(x.status!==200){document.getElementById("projectList").innerHTML="<div class=empty-state>加载失败 status="+x.status+"</div>";return;}
 var wb=XLSX.read(new Uint8Array(x.response),{type:"array"});
 var s1=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:""});
 var s2=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[1]],{header:1,defval:""});
 parseData(s1,s2);
+}catch(e){document.getElementById("projectList").innerHTML="<div class=empty-state>解析错误: "+e.message+"</div>";}
 };
 x.onerror=function(){document.getElementById("projectList").innerHTML="<div class=empty-state>网络错误</div>";};
 x.send();
+}catch(e){document.getElementById("projectList").innerHTML="<div class=empty-state>错误: "+e.message+"</div>";}
 }
 function C(v){return v?String(v).replace(/\r?\n/g," ").trim():"";}
 function DT(s){if(!s||s<1)return"";try{var p=XLSX.SSF.parse_date_code(s);return p.y+"-"+String(p.m).padStart(2,"0")+"-"+String(p.d).padStart(2,"0");}catch(e){return"";}}
