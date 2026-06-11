@@ -40,6 +40,7 @@ body{font-family:"Microsoft YaHei",Arial;background:#E3F2FD;color:#212121;displa
 .filter-bar{padding:6px 16px;border-bottom:1px solid #E0E0E0}
 .stage-chip{padding:3px 10px;border:1px solid #90CAF9;border-radius:12px;font-size:11px;cursor:pointer;background:#fff;color:#1565C0;margin:2px;display:inline-block}
 .stage-chip.active,.stage-chip:hover{background:#1565C0;color:#fff}
+.btn{padding:6px 16px;border-radius:4px;border:1px solid #90CAF9;cursor:pointer;font-size:13px;font-family:inherit;background:#fff;color:#1565C0}.btn:hover{background:#E3F2FD}
 </style>
 </head>
 <body>
@@ -50,7 +51,10 @@ body{font-family:"Microsoft YaHei",Arial;background:#E3F2FD;color:#212121;displa
 <button onclick="login()">确认</button>
 </div></div>
 <div id="mainApp" style="display:none;height:100vh;flex-direction:column">
-<header id="header"><h1>产品项目进度提醒</h1></header>
+<header id="header"><h1>产品项目进度提醒</h1>
+<span style="font-size:12px;color:#616161;margin-left:12px">密码:119119</span>
+<div><button class="btn" onclick="showPilotOverview()" style="margin-right:8px">中试概览</button></div>
+</header>
 <section id="kpiSection">
 <div class="kpi-card kpi-main" id="kpiMain"><div class="kpi-label">按时完成率</div><div class="kpi-value">--</div><div class="kpi-sub">加载中...</div></div>
 <div class="kpi-card" id="kpi0"><div class="kpi-label">送检开始</div><div class="kpi-value">--</div><div class="kpi-sub"></div></div>
@@ -119,14 +123,17 @@ function C(v){return v?String(v).replace(/\r?\n/g," ").trim():"";}
 function DT(s){if(!s||s<1)return"";try{var p=XLSX.SSF.parse_date_code(s);return p.y+"-"+String(p.m).padStart(2,"0")+"-"+String(p.d).padStart(2,"0");}catch(e){return"";}}
 function DB(d1,d2){if(!d1||!d2)return Infinity;var a=new Date(d1),b=new Date(d2);if(isNaN(a)||isNaN(b))return Infinity;return Math.round((b-a)/86400000);}
 function CV(a){for(var r=0;r<a.length;r++)for(var c=0;c<a[r].length;c++)if(typeof a[r][c]==="number"&&a[r][c]>40000&&a[r][c]<100000){var ds=DT(a[r][c]);if(ds)a[r][c]=ds;}}
+function parsePilot(s2){var pm={};if(s2&&s2.length>1)for(var r=1;r<s2.length;r++){var n=C(s2[r][0]);if(n)pm[n]={arc:C(s2[r][10]||""),mat:C(s2[r][11]||""),fix:s2[r][13]||"",prod:C(s2[r][14]||""),rev:s2[r][16]||"",conc:C(s2[r][17]||"")};}return pm;}
 function parseData(s1,s2){
-CV(s1);CV(s2);all=[];
+CV(s1);CV(s2);var pm=parsePilot(s2);all=[];
 for(var r=1;r<s1.length;r++){
 var name=C(s1[r][4]);if(!name)continue;
 var p={name:name,sn:C(s1[r][0]),series:C(s1[r][1]),model:C(s1[r][5]),person:C(s1[r][36]),ps:C(s1[r][32]),cs:C(s1[r][38]),nn:C(s1[r][39]||""),
 dates:{"送检开始计划":s1[r][9]||"","送检结束计划":s1[r][10]||"","中试开始计划":s1[r][11]||"","中试结束计划":s1[r][12]||"","上市计划":s1[r][15]||""},
 mon:{"送检开始":C(s1[r][24]),"送检结束":C(s1[r][25]),"中试开始":C(s1[r][26])}};
-p.lpcb=name.toUpperCase().includes("LPCB");p.coop=(s1[r][33]===0||s1[r][33]==="0");all.push(p);
+p.lpcb=name.toUpperCase().includes("LPCB");p.coop=(s1[r][33]===0||s1[r][33]==="0");
+p.pilot=pm[name]||null;
+all.push(p);
 }
 render();
 }
@@ -182,7 +189,7 @@ function render(){
 sortProjects(all);kpi=calcKPI(all);
 var f=all.slice();
 if(search){var kw=search.toLowerCase();f=f.filter(function(p){return p.name.toLowerCase().includes(kw)||p.series.toLowerCase().includes(kw)||p.person.toLowerCase().includes(kw);});}
-if(stage)f=f.filter(function(p){return(p.cs&&p.cs.includes(stage))||(stage==="上市"&&p.dates["上市计划"]);});
+if(stage){var sm={送检开始:"送检",送检结束:"送检",中试开始:"中试",中试结束:"中试",上市:"上市"};var sk=sm[stage]||stage;f=f.filter(function(p){return(p.cs&&p.cs.includes(sk))||(stage==="上市"&&p.dates["上市计划"]);});}
 document.getElementById("kpiMain").querySelector(".kpi-value").textContent=kpi.disp;
 document.getElementById("kpiMain").querySelector(".kpi-sub").textContent="延期 "+kpi.dc+" / 监控 "+kpi.tc;
 for(var i=0;i<3;i++){
@@ -218,8 +225,34 @@ h+="<table style=width:100%;font-size:12px;border-collapse:collapse><tr style=ba
 var v=p.dates[n+"计划"]||"-";var m=p.mon[n]||"";var ic=m.includes("逾期")?"red":m.includes("按期")?"green":"";
 h+="<tr><td style=padding:6px 8px><b>"+n+"</b></td><td style=padding:6px 8px>"+v+"</td><td style=padding:6px 8px;color:"+ic+">"+(m||"-")+"</td></tr>";
 });
-h+="</table>";panel.innerHTML=h;
+h+="</table>";
+if(p.pilot){var d=p.pilot;h+="<h3 style=margin-top:12px;color:#1565C0>中试进度</h3>";h+="<table style=width:100%;font-size:12px;border-collapse:collapse>";h+="<tr><td>研发归档</td><td>"+(d.arc==="是"?"✅":"❌")+"</td></tr>";h+="<tr><td>物料齐套</td><td>"+(d.mat==="是"?"✅":"❌")+"</td></tr>";h+="<tr><td>生产完成</td><td>"+(d.prod==="是"?"✅":"❌")+"</td></tr>";h+="<tr><td>评审</td><td>"+(d.rev||"⏳")+"</td></tr>";h+="<tr><td>结论</td><td>"+(d.conc||"⏳")+"</td></tr>";h+="</table>";}
+panel.innerHTML=h;
 }
+var pilotAspect="";
+function showPilotOverview(){
+var pp=all.filter(function(p){return p.pilot;});
+var panel=document.getElementById("detailPanel");
+if(!pp.length){panel.innerHTML="<div class=empty-state>无中试项目</div>";return;}
+var aspects=[{k:"",l:"全部"},{k:"archive",l:"归档"},{k:"material",l:"物料"},{k:"production",l:"生产"},{k:"review",l:"评审"}];
+var h="<div style=padding:16px><h2>中试进度概览</h2><div style=margin:8px 0>";
+aspects.forEach(function(a){h+="<span class=stage-chip"+(pilotAspect===a.k?" active":"")+" onclick=\"pilotAspect='"+a.k+"';showPilotOverview()\" style=cursor:pointer>"+a.l+"</span>";});
+h+="</div>";
+var fl=pp.slice();
+if(pilotAspect==="archive")fl=fl.filter(function(p){return p.pilot.arc!=="是";});
+else if(pilotAspect==="material")fl=fl.filter(function(p){return p.pilot.mat!=="是";});
+else if(pilotAspect==="production")fl=fl.filter(function(p){return p.pilot.prod!=="是";});
+else if(pilotAspect==="review")fl=fl.filter(function(p){return!p.pilot.rev;});
+h+="<div class=summary-bar>共 <b>"+fl.length+"</b> 个</div>";
+fl.forEach(function(p){var d=p.pilot;
+var chase=[];if(d.arc!=="是")chase.push("归档");if(d.mat!=="是")chase.push("物料");if(d.prod!=="是")chase.push("生产");if(!d.rev)chase.push("评审");
+h+="<div style=background:#fff;border:1px solid #E0E0E0;border-radius:8px;padding:12px;margin:8px 0><strong>"+p.name+"</strong> <span style=font-size:11px;color:#616161>"+(p.person||"-")+"</span>";
+if(chase.length)h+="<div style=margin-top:6px;background:#FFF3E0;padding:8px;border-radius:4px;font-size:11px;color:#BF360C>"+chase.map(function(c){return "需催: "+c;}).join("<br>")+"</div>";
+h+="<div style=font-size:11px;color:#616161;margin-top:4px>归档:"+(d.arc==="是"?"✅":"❌")+" 物料:"+(d.mat==="是"?"✅":"❌")+" 生产:"+(d.prod==="是"?"✅":"❌")+" 评审:"+(d.rev||"⏳")+"</div></div>";
+});
+h+="</div>";panel.innerHTML=h;
+}
+
 function showDelayList(node){
 var t=new Date().toISOString().split("T")[0];
 var fl=all.filter(function(p){var plan=p.dates[NP[node]];var actual=p.dates[NA[node]];if(actual)return false;if(!plan)return p.mon[node]==="逾期未完成";return DB(plan,t)>0;});
