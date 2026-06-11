@@ -73,7 +73,6 @@ body{font-family:"Microsoft YaHei",Arial;background:#E3F2FD;color:#212121;displa
 <section id="rightPanel"><div id="detailPanel" class="detail-panel"><div class="empty-state">点击左侧项目查看详情</div></div></section>
 </main></div>
 <script>
-alert("JS脚本开始执行");
 var all=[],kpi=null,search="",stage="",sel=null,PWD="119119";
 function login(){
 var v=document.getElementById("pw").value;
@@ -99,7 +98,7 @@ render();
 }
 function load(){
 var x=new XMLHttpRequest();
-x.open("GET","产品项目管理监控表20260529.xlsx",true);
+x.open("GET","data.xlsx",true);
 x.responseType="arraybuffer";
 x.onload=function(){
 if(x.status!==200){document.getElementById("projectList").innerHTML="<div class=empty-state>加载失败</div>";return;}
