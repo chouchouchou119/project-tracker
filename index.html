@@ -281,28 +281,42 @@ it.onclick=function(){sel=p.name;render();showDetail(p);};pl.appendChild(it);
 // ============ 项目详情 ============
 function showDetail(p){
 var panel=document.getElementById("detailPanel");
-var h="<div class=detail-section><h3>基本信息</h3>";
-h+="<table class=detail>";
-h+="<tr><td>序号</td><td>"+(p.sn||"-")+"</td><td>系列</td><td>"+(p.series||"-")+"</td></tr>";
-h+="<tr><td>型号</td><td>"+(p.model||"-")+"</td><td>替代型号</td><td>"+(p.altModel||"-")+"</td></tr>";
-h+="<tr><td>负责人</td><td><b>"+(p.person||"-")+"</b></td><td>当前阶段</td><td>"+(p.cs||"-")+"</td></tr>";
-h+="<tr><td>项目状态</td><td>"+(p.ps||"进行中")+"</td><td>下一步</td><td>"+(p.nn||"-")+"</td></tr>";
-h+="</table></div>";
+var h="<div style=display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #BBDEFB><h2 style=font-size:17px;color:#1565C0>"+p.name+"</h2><span style=font-size:12px;padding:4px 10px;border-radius:12px;background:"+(p.ps==="完成"||p.ps==="提前完成"?"#E8F5E9":"#FFF3E0")+";color:"+(p.ps==="完成"||p.ps==="提前完成"?"#2E7D32":"#F57C00")+">"+(p.ps||"进行中")+"</span></div>";
+
+h+="<div class=detail-section><h3>基本信息</h3>";
+h+="<div style=display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;font-size:13px>";
+h+="<div><span style=color:#9E9E9E>序号</span> "+(p.sn||"-")+"</div>";
+h+="<div><span style=color:#9E9E9E>系列</span> "+(p.series||"-")+"</div>";
+h+="<div><span style=color:#9E9E9E>型号</span> "+(p.model||"-")+"</div>";
+h+="<div><span style=color:#9E9E9E>替代型号</span> "+(p.altModel||"-")+"</div>";
+h+="<div><span style=color:#9E9E9E>替代编码</span> "+(p.altCode||"-")+"</div>";
+h+="<div><span style=color:#9E9E9E>负责人</span> <b>"+(p.person||"-")+"</b></div>";
+h+="<div><span style=color:#9E9E9E>当前阶段</span> "+(p.cs||"-")+"</div>";
+h+="<div><span style=color:#9E9E9E>下一步</span> <span style=color:"+(p.nn.indexOf("超期")>=0?"#E53935":"#616161")+">"+(p.nn||"-")+"</span></div>";
+h+="</div></div>";
 
 h+="<div class=detail-section><h3>关键节点进度</h3>";
-h+="<table class=detail><tr><th>节点</th><th>计划日期</th><th>实际日期</th><th>状态</th></tr>";
+h+="<div style=display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap>";
 var nds=[["送检开始","送检开始计划","送检开始实际"],["送检结束","送检结束计划","送检结束实际"],["中试开始","中试开始计划","中试开始实际"],["中试结束","中试结束计划","中试结束实际"],["批产开始","批产开始计划","批产开始实际"],["批产结束","批产结束计划","批产结束实际"],["上市","上市计划","上市实际"]];
-nds.forEach(function(n){var st=p.mon[n[0]]||"-",ic="";if(st.includes("逾期"))ic="color:#E53935";else if(st.includes("按期"))ic="color:#43A047";h+="<tr><td><b>"+n[0]+"</b></td><td>"+(p.dates[n[1]]||"-")+"</td><td>"+(p.dates[n[2]]||"-")+"</td><td style="+ic+">"+st+"</td></tr>";});
-h+="</table></div>";
+nds.forEach(function(n){
+var st=p.mon[n[0]]||"";var cls="background:#F5F5F5;color:#BDBDBD";
+if(st.includes("逾期未完成"))cls="background:#FFEBEE;color:#E53935;font-weight:600";
+else if(st.includes("逾期完成"))cls="background:#FFF3E0;color:#EF6C00";
+else if(st.includes("按期完成"))cls="background:#E8F5E9;color:#2E7D32";
+else if(st==="待完成")cls="background:#FFF8E1;color:#F57F17";
+h+="<div style=flex:1;min-width:90px;text-align:center;padding:10px 6px;border-radius:8px;font-size:11px;"+cls+"><div style=font-weight:600;margin-bottom:2px>"+n[0]+"</div><div style=font-size:10px;color:#9E9E9E>计划 "+(p.dates[n[1]]||"-")+"</div><div style=font-size:10px;color:#9E9E9E>实际 "+(p.dates[n[2]]||"-")+"</div><div style=margin-top:4px>"+st+"</div></div>";
+});
+h+="</div></div>";
 
 if(p.pilot){var d=p.pilot;
-h+="<div class=detail-section><h3>中试进度</h3><table class=detail>";
-h+="<tr><td>研发归档</td><td style="+(d.arc==="是"?"color:#43A047":"color:#E53935")+">"+(d.arc==="是"?"✅ 已完成":"❌ 未完成")+"</td></tr>";
-h+="<tr><td>物料齐套</td><td style="+(d.mat==="是"?"color:#43A047":"color:#E53935")+">"+(d.mat==="是"?"✅ 已完成":"❌ 未完成")+"</td></tr>";
-h+="<tr><td>生产完成</td><td style="+(d.prod==="是"?"color:#43A047":"color:#E53935")+">"+(d.prod==="是"?"✅ 已完成":"❌ 未完成")+"</td></tr>";
-h+="<tr><td>中试评审</td><td>"+(d.rev||"⏳ 待评审")+"</td></tr>";
-h+="<tr><td>中试结论</td><td>"+(d.conc||"⏳ 待出具")+"</td></tr>";
-h+="</table></div>";
+h+="<div class=detail-section><h3>中试进度</h3>";
+h+="<div style=display:flex;gap:8px;flex-wrap:wrap;font-size:12px>";
+h+="<div style=flex:1;min-width:80px;text-align:center;padding:10px 8px;border-radius:8px;background:"+(d.arc==="是"?"#E8F5E9":"#FFEBEE")+";color:"+(d.arc==="是"?"#2E7D32":"#E53935")+"><div>① 归档</div><div style=font-size:18px;margin-top:4px>"+(d.arc==="是"?"✅":"❌")+"</div></div>";
+h+="<div style=flex:1;min-width:80px;text-align:center;padding:10px 8px;border-radius:8px;background:"+(d.mat==="是"?"#E8F5E9":"#FFEBEE")+";color:"+(d.mat==="是"?"#2E7D32":"#E53935")+"><div>② 物料</div><div style=font-size:18px;margin-top:4px>"+(d.mat==="是"?"✅":"❌")+"</div></div>";
+h+="<div style=flex:1;min-width:80px;text-align:center;padding:10px 8px;border-radius:8px;background:"+(d.prod==="是"?"#E8F5E9":"#FFEBEE")+";color:"+(d.prod==="是"?"#2E7D32":"#E53935")+"><div>③ 生产</div><div style=font-size:18px;margin-top:4px>"+(d.prod==="是"?"✅":"❌")+"</div></div>";
+h+="<div style=flex:1;min-width:80px;text-align:center;padding:10px 8px;border-radius:8px;background:"+(d.rev?"#E8F5E9":"#FFF8E1")+";color:"+(d.rev?"#2E7D32":"#F57F17")+"><div>④ 评审</div><div style=font-size:18px;margin-top:4px>"+(d.rev||"⏳")+"</div></div>";
+h+="<div style=flex:1;min-width:80px;text-align:center;padding:10px 8px;border-radius:8px;background:"+(d.conc?"#E8F5E9":"#FFF8E1")+";color:"+(d.conc?"#2E7D32":"#F57F17")+"><div>⑤ 结论</div><div style=font-size:18px;margin-top:4px>"+(d.conc||"⏳")+"</div></div>";
+h+="</div></div>";
 }
 panel.innerHTML=h;
 }
