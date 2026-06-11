@@ -294,26 +294,28 @@ var info=[["序号",p.sn],["系列",p.series],["型号",p.model],["替代编码"
 info.forEach(function(x){h+="<div><span style=color:#9E9E9E;font-size:11px>"+x[0]+"</span><br>"+(x[1]||"-")+"</div>";});
 h+="</div></div>";
 
-h+="<div class=detail-section><h3>📅 关键节点</h3><div style=display:flex;gap:6px;flex-wrap:wrap>";
+h+="<div class=detail-section><h3>📅 关键节点</h3>";
+h+="<table class=detail style=font-size:12px><thead><tr><th style=width:15%>节点</th><th style=width:25%>计划日期</th><th style=width:25%>实际日期</th><th style=width:35%>状态</th></tr></thead><tbody>";
 var nds=[["送检开始","送检开始计划","送检开始实际"],["送检结束","送检结束计划","送检结束实际"],["中试开始","中试开始计划","中试开始实际"],["中试结束","中试结束计划","中试结束实际"],["批产开始","批产开始计划","批产开始实际"],["上市","上市计划","上市实际"]];
 nds.forEach(function(n){
-var st=p.mon[n[0]]||"",bg="#F5F5F5",c="#BDBDBD",icon="";
-if(st.includes("逾期未完成")){bg="#FFEBEE";c="#E53935";icon="🔴";}
-else if(st.includes("逾期完成")){bg="#FFF3E0";c="#EF6C00";icon="⚠️";}
-else if(st.includes("按期完成")){bg="#E8F5E9";c="#2E7D32";icon="✅";}
-else if(st==="待完成"){bg="#FFF8E1";c="#F57F17";icon="⏳";}
-h+="<div style=flex:1;min-width:100px;text-align:center;padding:10px 8px;border-radius:8px;background:"+bg+";color:"+c+";font-size:11px><div style=font-weight:600;font-size:12px;margin-bottom:3px>"+icon+" "+n[0]+"</div><div style=font-size:10px;color:#9E9E9E>计划:"+(p.dates[n[1]]||"-")+"</div><div style=font-size:10px;color:#9E9E9E>实际:"+(p.dates[n[2]]||"-")+"</div><div style=margin-top:3px;font-weight:500>"+st+"</div></div>";
+var st=p.mon[n[0]]||"",ic="",bg="";
+if(st.includes("逾期未完成")){ic="🔴";bg="background:#FFF5F5";}
+else if(st.includes("逾期完成")){ic="⚠️";bg="background:#FFF8F0";}
+else if(st.includes("按期完成")){ic="✅";bg="background:#F5FFF5";}
+else if(st==="待完成"){ic="⏳";}
+h+="<tr style="+bg+"><td><b>"+n[0]+"</b></td><td>"+(p.dates[n[1]]||"-")+"</td><td>"+(p.dates[n[2]]||"-")+"</td><td>"+ic+" "+st+"</td></tr>";
 });
-h+="</div></div>";
+h+="</tbody></table></div>";
 
 if(p.pilot){var d=p.pilot;
-h+="<div class=detail-section><h3>🔧 中试进度</h3><div style=display:flex;gap:6px;flex-wrap:wrap>";
-var steps=[["①归档",d.arc],[ "②物料",d.mat],["③生产",d.prod],["④评审",d.rev?"✅":"⏳"],["⑤结论",d.conc?"✅":"⏳"]];
-steps.forEach(function(s){
-var done=s[1]==="是"||s[1]==="✅",bg2=done?"#E8F5E9":"#FFEBEE",c2=done?"#2E7D32":"#E53935";
-h+="<div style=flex:1;min-width:80px;text-align:center;padding:12px 8px;border-radius:8px;background:"+bg2+";color:"+c2+";font-size:12px><div style=font-weight:600>"+s[0]+"</div><div style=font-size:20px;margin-top:4px>"+(done?"✅":"❌")+"</div></div>";
-});
-h+="</div></div>";
+h+="<div class=detail-section><h3>🔧 中试进度</h3>";
+h+="<table class=detail style=font-size:12px><thead><tr><th>步骤</th><th>环节</th><th>状态</th><th>说明</th></tr></thead><tbody>";
+h+="<tr"+(d.arc==="是"?" style=background:#F5FFF5":" style=background:#FFF5F5")+"><td>1</td><td>研发归档</td><td>"+(d.arc==="是"?"✅ 完成":"❌ 未完成")+"</td><td style=font-size:11px;color:#9E9E9E>"+(d.arc==="是"?"":"需催: 薛涵月(档案室)")+"</td></tr>";
+h+="<tr"+(d.mat==="是"?" style=background:#F5FFF5":" style=background:#FFF5F5")+"><td>2</td><td>物料齐套</td><td>"+(d.mat==="是"?"✅ 完成":"❌ 未完成")+"</td><td style=font-size:11px;color:#9E9E9E>"+(d.mat==="是"?"":"需催: 生产计划")+"</td></tr>";
+h+="<tr"+(d.prod==="是"?" style=background:#F5FFF5":" style=background:#FFF5F5")+"><td>3</td><td>生产完成</td><td>"+(d.prod==="是"?"✅ 完成":"❌ 未完成")+"</td><td style=font-size:11px;color:#9E9E9E>"+(d.prod==="是"?"":"需催: 孙登琨(生产计划)")+"</td></tr>";
+h+="<tr"+(d.rev?" style=background:#F5FFF5":" style=background:#FFF8F0")+"><td>4</td><td>中试评审</td><td>"+(d.rev||"⏳ 待评审")+"</td><td style=font-size:11px;color:#9E9E9E>"+(d.rev?"":"需催: 姜雨豪(研发管理)")+"</td></tr>";
+h+="<tr"+(d.conc?" style=background:#F5FFF5":" style=background:#FFF8F0")+"><td>5</td><td>中试结论</td><td>"+(d.conc||"⏳ 待出具")+"</td><td style=font-size:11px;color:#9E9E9E>"+(d.conc?"":"需催: 王国燕/郭嘉")+"</td></tr>";
+h+="</tbody></table></div>";
 }
 panel.innerHTML=h;
 }
