@@ -303,8 +303,8 @@ h+="</div></div>";
 h+="<div class=detail-section><h3>关键节点进度</h3><table class=detail><thead><tr><th>节点</th><th>计划日期</th><th>实际日期</th><th>状态</th></tr></thead><tbody>";
 var nds=[["送检开始","送检开始计划","送检开始实际"],["送检结束","送检结束计划","送检结束实际"],["中试开始","中试开始计划","中试开始实际"],["中试结束","中试结束计划","中试结束实际"],["批产开始","批产开始计划","批产开始实际"],["上市","上市计划","上市实际"]];
 nds.forEach(function(n){
-var st=p.mon[n[0]]||"",cls="";if(st.includes("逾期未完成"))cls="style=color:#E53935;font-weight:600";else if(st.includes("逾期完成"))cls="style=color:#EF6C00";else if(st.includes("按期完成"))cls="style=color:#2E7D32";else cls="style=color:#9E9E9E";
-h+="<tr><td><b>"+n[0]+"</b></td><td>"+(p.dates[n[1]]||"-")+"</td><td>"+(p.dates[n[2]]||"-")+"</td><td "+cls+">"+st+"</td></tr>";
+var st=p.mon[n[0]]||"",cls="",bg="",icon="";if(st.includes("逾期未完成")){cls="color:#E53935;font-weight:600";bg="background:#FFF5F5";icon="🔴";}else if(st.includes("逾期完成")){cls="color:#EF6C00";bg="background:#FFF8F0";icon="⚠️";}else if(st.includes("按期完成")){cls="color:#2E7D32";bg="background:#F5FFF5";icon="✅";}else if(st==="待完成"){cls="color:#F57F17";icon="⏳";}else{cls="color:#9E9E9E";icon="";}
+h+="<tr style="+bg+"><td><b>"+n[0]+"</b></td><td>"+(p.dates[n[1]]||"-")+"</td><td>"+(p.dates[n[2]]||"-")+"</td><td style="+cls+">"+icon+" "+st+"</td></tr>";
 });
 h+="</tbody></table></div>";
 
@@ -340,10 +340,10 @@ h+="<span style=padding:6px 14px;border-radius:16px;font-size:12px;cursor:pointe
 h+="</div>";
 var fl=pp.slice();
 var filterLabel="全部";
-if(pilotAspect==="archive"){fl=fl.filter(function(p){return p.pilot.arc!=="是";});filterLabel="归档未完成";}
-else if(pilotAspect==="material"){fl=fl.filter(function(p){return p.pilot.mat!=="是";});filterLabel="物料未齐套";}
-else if(pilotAspect==="production"){fl=fl.filter(function(p){return p.pilot.prod!=="是";});filterLabel="生产未完成";}
-else if(pilotAspect==="review"){fl=fl.filter(function(p){return!p.pilot.rev;});filterLabel="评审未完成";}
+if(pilotAspect==="archive"){fl=fl.filter(function(p){return p.pilot.arc!=="是";});filterLabel="归档未完成 - 需催薛涵月（档案室）";}
+else if(pilotAspect==="material"){fl=fl.filter(function(p){return p.pilot.mat!=="是";});filterLabel="物料未齐套 - 需催生产计划";}
+else if(pilotAspect==="production"){fl=fl.filter(function(p){return p.pilot.prod!=="是";});filterLabel="生产未完成 - 需催孙登琨";}
+else if(pilotAspect==="review"){fl=fl.filter(function(p){return!p.pilot.rev;});filterLabel="评审未完成 - 需催姜雨豪";}
 if(pilotAspect)h+="<div style=padding:10px 16px;background:#E3F2FD;border-left:4px solid #1565C0;border-radius:4px;margin-bottom:12px;font-size:13px;color:#1565C0><b>筛选条件:</b> "+filterLabel+" | <b>"+fl.length+"</b> 个项目</div>";
 else h+="<div class=summary-bar style=margin-bottom:12px>共 <b>"+fl.length+"</b> 个项目</div>";
 fl.forEach(function(p){var d=p.pilot;
