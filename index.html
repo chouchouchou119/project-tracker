@@ -77,6 +77,7 @@ table.detail tr:hover{background:#FAFAFA}
 .dv{font-weight:500;color:#212121}
 .detail-section{margin-bottom:20px}
 .detail-section h3{font-size:13px;color:#616161;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #F0F0F0;font-weight:600}
+.pf-chip{padding:6px 14px;border-radius:16px;font-size:12px;cursor:pointer;border:2px solid #E0E0E0;background:#fff;color:#757575;display:inline-block;margin:2px}.pf-chip:hover{background:#E3F2FD;border-color:#90CAF9}.pf-chip.on{background:#1565C0;color:#fff;border-color:#1565C0;font-weight:600}
 </style>
 </head>
 <body>
@@ -333,7 +334,7 @@ var aspects=[{k:"",l:"全部"},{k:"archive",l:"归档"},{k:"material",l:"物料"
 var h="<div style=padding:20px><h2 style=margin-bottom:12px;color:#1565C0>中试进度概览</h2>";
 h+="<div style=margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap>";
 aspects.forEach(function(a){
-var isActive=pilotAspect===a.k;
+var isActive=pilotAspect===a.k;var chipClass="pf-chip"+(isActive?" on":"");
 h+="<span style=padding:6px 14px;border-radius:16px;font-size:12px;cursor:pointer;transition:all .2s;border:2px solid "+(isActive?"#1565C0":"#E0E0E0")+";background:"+(isActive?"#1565C0":"#fff")+";color:"+(isActive?"#fff":"#757575")+";font-weight:"+(isActive?"600":"400")+"\" onclick=\"pilotAspect='"+a.k+"';showPilotOverview()\">"+a.l+"</span>";
 });
 h+="</div>";
