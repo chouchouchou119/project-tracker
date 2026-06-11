@@ -247,6 +247,7 @@ projs.sort(function(a,b){return a.sd-b.sd||a.name.localeCompare(b.name,"zh-CN");
 
 // ============ 渲染 ============
 function render(){
+search=document.getElementById("searchInput").value;
 sortProjects(all);kpi=calcKPI(all);
 var f=all.slice();
 if(search){var kw=search.toLowerCase();f=f.filter(function(p){return p.name.toLowerCase().includes(kw)||p.series.toLowerCase().includes(kw)||p.person.toLowerCase().includes(kw);});}
