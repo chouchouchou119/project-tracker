@@ -273,7 +273,7 @@ for(var gk in grps){var g=grps[gk],items=f.filter(function(p){return p.slv===gk;
 var hd=document.createElement("div");hd.className="group-header "+g.c;hd.textContent=g.l+" ("+items.length+")";pl.appendChild(hd);
 items.forEach(function(p){
 var it=document.createElement("div");it.className="project-item";if(sel===p.name)it.classList.add("selected");
-it.innerHTML="<div class=item-info><div class=item-name>"+(p.pilot?"🔧 ":"")+p.name+"</div><div class=item-meta><span>👤 "+(p.person||"-")+"</span><span>📦 "+(p.series||"-")+"</span><span>📍 "+(p.cs||"-")+"</span></div></div><span class=badge badge-"+p.slv+">"+p.sl+"</span>";
+it.innerHTML="<div class=item-info><div class=item-name>"+(p.pilot?"🔧 ":"")+p.name+"</div><div class=item-meta><span>👤 "+(p.person||"-")+"</span><span>📦 "+(p.series||"-")+"</span><span>"+(p.model||"-")+"</span><span>📍 "+(p.cs||"-")+"</span></div></div><span class=badge badge-"+p.slv+">"+p.sl+"</span>";
 it.onclick=function(){sel=p.name;render();showDetail(p);};pl.appendChild(it);
 });}
 }
@@ -326,7 +326,7 @@ h+="<div class=summary-bar>共 <b>"+fl.length+"</b> 个项目</div>";
 fl.forEach(function(p){var d=p.pilot;
 var chase=[];if(d.arc!=="是")chase.push("归档→薛涵月");if(d.mat!=="是")chase.push("物料→生产计划");if(d.prod!=="是")chase.push("生产→孙登琨");if(!d.rev)chase.push("评审→姜雨豪");
 h+="<div class=pilot-card><div style=display:flex;justify-content:space-between;align-items:center><strong>"+p.name+"</strong><span style=font-size:11px;background:"+(chase.length?"#FFEBEE":"#E8F5E9")+";color:"+(chase.length?"#E53935":"#2E7D32")+";padding:2px 8px;border-radius:10px>"+(chase.length?chase.length+"项待催":"正常")+"</span></div>";
-h+="<div style=font-size:11px;color:#9E9E9E;margin-top:2px>👤 "+(p.person||"-")+" | 📦 "+(p.series||"-")+"</div>";
+h+="<div style=font-size:11px;color:#9E9E9E;margin-top:2px>👤 "+(p.person||"-")+" | 📦 "+(p.series||"-")+" | 型号: "+(p.model||"-")+"</div>";
 if(chase.length)h+="<div class=chase-box>"+chase.map(function(c){return"• "+c;}).join("<br>")+"</div>";
 h+="<div style=font-size:11px;color:#757575;margin-top:6px;display:flex;gap:12px>归档:"+(d.arc==="是"?"✅":"❌")+" 物料:"+(d.mat==="是"?"✅":"❌")+" 生产:"+(d.prod==="是"?"✅":"❌")+" 评审:"+(d.rev||"⏳")+" 结论:"+(d.conc||"⏳")+"</div></div>";
 });
